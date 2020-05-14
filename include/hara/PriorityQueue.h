@@ -27,7 +27,7 @@ public:
     };
 
     /**
-     * copy from exisiting queue
+     * copy from existing queue
      *
      * complexity: O(N)
      */
@@ -51,7 +51,19 @@ public:
      * complexity: guaranteed O(N*lg(N))
      */
     template<typename Iterator>
-    PriorityQueue(Iterator begin, Iterator end) : impl{new Impl{begin, end}} {}
+    explicit PriorityQueue(Iterator begin, Iterator end) : impl{new Impl{begin, end}} {
+        static_assert(std::is_same<typename Impl::C, Compare>::value, "");
+    }
+
+    /**
+     * construct with initializer list of pair<Key, Value>
+     *
+     * complexity: guranteed O(N*lg(N))
+     */
+    PriorityQueue(const std::initializer_list<std::pair<K, V>> &ilist) :
+            impl{new Impl{ilist}} {
+        static_assert(std::is_same<typename Impl::C, Compare>::value, "");
+    }
 
     ~PriorityQueue() { delete impl; };
 
@@ -88,6 +100,11 @@ public:
         delete impl;
         impl = that.impl;
         that.impl = nullptr;
+        return *this;
+    }
+
+    PriorityQueue &operator=(const std::initializer_list<std::pair<K, V>> &ilist) {
+        impl->operator=(ilist);
         return *this;
     }
 
@@ -142,6 +159,8 @@ public:
      * complexity: O(lg(N))
      */
     bool Erase(const K &key) { return impl->Erase(key); }
+
+    void Clear() { return impl->Clear(); }
 
     /**
      * return whether the queue contains the key

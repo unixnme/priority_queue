@@ -77,24 +77,34 @@ int main() {
 
     PriorityQueue<int, std::string, std::greater<std::string>,
             PriorityQueueImpl1<int, std::string, std::greater<std::string>>> queue{values.begin(), values.end()};
+
     assert(CheckCopyConstructor(queue));
     assert(CheckOrder(PriorityQueue<int, std::string>{values.begin(), values.end()}));
     assert(CheckMoveConstructor(PriorityQueue<int, std::string>{values.begin(), values.end()}));
     assert(CheckCopyOperator(PriorityQueue<int, std::string>{values.begin(), values.end()}));
     assert(CheckMoveOperator(PriorityQueue<int, std::string>{values.begin(), values.end()}));
-    Print(PriorityQueue<int, std::string, std::greater<std::string>>{values.begin(), values.end()});
+    Print(PriorityQueue<int, std::string, std::greater<std::string>>{{0, "c"},
+                                                                     {1, "b"},
+                                                                     {5, "A"},
+                                                                     {4, "a"},
+                                                                     {2, "z"},
+                                                                     {3, "X"}});
 
-    PriorityQueue<int, std::string, std::less<std::string>,
-            PriorityQueueImpl2<int, std::string, std::less<std::string>>> queue2{values.begin(), values.end()};
+    PriorityQueue<int, std::string, std::greater<std::string>,
+            PriorityQueueImpl2<int, std::string, std::greater<std::string>>> queue2{values.begin(), values.end()};
     auto copy1{queue2};
     assert(CheckCopyConstructor(queue2));
     assert(CheckOrder(copy1));
     assert(CheckMoveConstructor(copy1));
     assert(CheckCopyOperator(copy1));
     assert(CheckMoveOperator(copy1));
-    Print(PriorityQueue<int, std::string, std::greater<std::string>,
-            PriorityQueueImpl2<int, std::string, std::greater<std::string>>>{values.begin(), values.end()});
-
+    Print(PriorityQueue<int, std::string, std::less<std::string>,
+            PriorityQueueImpl2<int, std::string, std::less<std::string>>>{{0, "c"},
+                                                                             {1, "b"},
+                                                                             {5, "A"},
+                                                                             {4, "a"},
+                                                                             {2, "z"},
+                                                                             {3, "X"}});
 
     return 0;
 }

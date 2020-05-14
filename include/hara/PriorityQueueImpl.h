@@ -16,6 +16,8 @@ public:
 
     virtual ~PriorityQueueItf() = default;
 
+    virtual PriorityQueueItf& operator=(const std::initializer_list<std::pair<K, V>> &ilist) = 0;
+
     virtual const std::pair<K, V> &Top() const = 0;
 
     virtual void Pop() = 0;
@@ -27,6 +29,8 @@ public:
     virtual bool InsertOrUpdate(std::pair<K, V> pair) = 0;
 
     virtual bool Erase(const K &key) = 0;
+
+    virtual void Clear() = 0;
 
     virtual bool Contain(const K &key) const = 0;
 
@@ -69,7 +73,18 @@ public:
         }
     }
 
+    PriorityQueueImpl1(const std::initializer_list<std::pair<K, V>> &ilist)
+            : PriorityQueueImpl1{ilist.begin(), ilist.end()} {}
+
     ~PriorityQueueImpl1() override = default;
+
+    PriorityQueueImpl1 &operator=(const std::initializer_list<std::pair<K, V>> &ilist) override {
+        valid.clear();
+        queue = std::priority_queue<Pair>{ilist.begin(), ilist.end()};
+        for (auto it = ilist.begin(); it != ilist.end(); ++it)
+            valid.emplace(*it);
+        return *this;
+    }
 
     /**
      * Complexity: O(1)
@@ -119,6 +134,11 @@ public:
         valid.erase(it);
         PopTillValid();
         return true;
+    }
+
+    void Clear() override {
+        valid.clear();
+        queue = std::priority_queue<Pair>{};
     }
 
     /**
@@ -171,7 +191,19 @@ public:
         }
     }
 
+    PriorityQueueImpl2(const std::initializer_list<std::pair<K, V>> &ilist)
+            : PriorityQueueImpl2{ilist.begin(), ilist.end()} {}
+
     ~PriorityQueueImpl2() override = default;
+
+    PriorityQueueImpl2 &operator=(const std::initializer_list<std::pair<K, V>> &ilist) override {
+        Clear();
+        for (auto it = ilist.begin(); it != ilist.end(); ++it) {
+            set.emplace(Pair{*it});
+            valid.insert(*it);
+        }
+        return *this;
+    }
 
     /**
      * Complexity: O(1)
@@ -220,6 +252,11 @@ public:
         set.erase(Pair{*it});
         valid.erase(it);
         return true;
+    }
+
+    void Clear() override {
+        set.clear();
+        valid.clear();
     }
 
     /**
