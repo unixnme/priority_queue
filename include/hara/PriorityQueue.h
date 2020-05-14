@@ -22,14 +22,18 @@ public:
     /**
      * Empty queue
      */
-    PriorityQueue() : impl{new Impl} {};
+    PriorityQueue() : impl{new Impl} {
+        static_assert(std::is_same<typename Impl::C, Compare>::value, "");
+    };
 
     /**
      * copy from exisiting queue
      *
      * complexity: O(N)
      */
-    PriorityQueue(const PriorityQueue &copy) : impl{new Impl{*copy.impl}} {}
+    PriorityQueue(const PriorityQueue &copy) : impl{new Impl{*copy.impl}} {
+        static_assert(std::is_same<typename Impl::C, Compare>::value, "");
+    }
 
     /**
      * move construction
@@ -54,7 +58,7 @@ public:
     /**
      * return false if queue is invalidated
      * attempt to call any methods of an invalidated queue will result in seg-fault
-     * a queue is invalated after move constructor & operator
+     * a queue is invalidated after move constructor & operator
      *
      * complexity: O(1)
      */

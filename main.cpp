@@ -60,6 +60,14 @@ bool CheckCopyOperator(Queue q) {
     return CheckIdentical(q, copy);
 }
 
+template<typename Queue>
+void Print(Queue q) {
+    while (!q.Empty()) {
+        std::cout << q.Top().first << ": " << q.Top().second << std::endl;
+        q.Pop();
+    }
+}
+
 int main() {
     std::vector<std::pair<int, std::string>> values = {{0, "a"},
                                                        {1, "z"},
@@ -67,12 +75,22 @@ int main() {
                                                        {10, "axx"},
                                                        {-2, "exh"}};
 
-    PriorityQueue<int, std::string> queue{values.begin(), values.end()};
+    PriorityQueue<int, std::string, std::greater<std::string>,
+    PriorityQueueImpl1<int, std::string, std::greater<std::string>>> queue{values.begin(), values.end()};
     assert(CheckCopyConstructor(queue));
     assert(CheckOrder(PriorityQueue<int, std::string> {values.begin(), values.end()}));
     assert(CheckMoveConstructor(PriorityQueue<int, std::string> {values.begin(), values.end()}));
     assert(CheckCopyOperator(PriorityQueue<int, std::string> {values.begin(), values.end()}));
     assert(CheckMoveOperator(PriorityQueue<int, std::string> {values.begin(), values.end()}));
+    Print(PriorityQueue<int, std::string, std::greater<std::string>> {values.begin(), values.end()});
+
+//    PriorityQueue<int, std::string, std::greater<std::string>,
+//    PriorityQueueImpl2<int, std::string, std::greater<std::string>>> queue2{values.begin(), values.end()};
+//    assert(CheckCopyConstructor(queue2));
+//    assert(CheckOrder(PriorityQueue<int, std::string> {values.begin(), values.end()}));
+//    assert(CheckMoveConstructor(PriorityQueue<int, std::string> {values.begin(), values.end()}));
+//    assert(CheckCopyOperator(PriorityQueue<int, std::string> {values.begin(), values.end()}));
+//    assert(CheckMoveOperator(PriorityQueue<int, std::string> {values.begin(), values.end()}));
 
     return 0;
 }
