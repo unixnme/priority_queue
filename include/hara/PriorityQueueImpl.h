@@ -23,9 +23,9 @@ public:
 
     virtual bool Empty() const = 0;
 
-    virtual void InsertOrUpdate(std::pair<K, V> pair) = 0;
+    virtual bool InsertOrUpdate(std::pair<K, V> pair) = 0;
 
-    virtual void Erase(const K &key) = 0;
+    virtual bool Erase(const K &key) = 0;
 
     virtual bool Contain(const K &key) const = 0;
 
@@ -40,10 +40,6 @@ protected:
                     (!Compare{}(that.x.second, x.second) && x.first < that.x.first);
         }
     };
-
-    inline void Assert(bool cond, const std::string &msg = std::string{}) const {
-        if (!(cond)) throw std::runtime_error(msg);
-    }
 };
 
 template<typename Key, typename Value, typename Compare>
@@ -65,21 +61,17 @@ public:
         }
     }
 
-    ~PriorityQueueImpl1() override {};
+    ~PriorityQueueImpl1() override = default;
 
     /**
      * Complexity: O(1)
      */
-    const std::pair<K, V> &Top() const override {
-        PriorityQueueImpl<K, V, C>::Assert(!Empty(), "PriorityQueueImpl1::Top");
-        return queue.top().x;
-    }
+    const std::pair<K, V> &Top() const override { return queue.top().x; }
 
     /**
      * Complexity: Amortized O(1)
      */
     void Pop() override {
-        if (Empty()) return;
         valid.erase(queue.top().x.first);
         queue.pop();
         PopTillValid();
@@ -92,25 +84,33 @@ public:
     /**
      * Complexity: O(lg(N))
      */
-    void InsertOrUpdate(std::pair<K, V> pair) override {
+    bool InsertOrUpdate(std::pair<K, V> pair) override {
+        bool found;
         auto it = valid.find(pair.first);
-        if (it == valid.end())
+        if (it == valid.end()) {
+            found = false;
             valid.emplace(pair);
-        else
+        }
+        else {
+            found = true;
             it->second = pair.second;
+        }
         queue.emplace(std::move(pair));
         PopTillValid();
+        return found;
     }
 
     /**
      * Complexity: O(lg(N))
      */
-    void Erase(const K &key) override {
+    bool Erase(const K &key) override {
         auto it = valid.find(key);
-        if (it == valid.end()) return;
+        if (it == valid.end())
+            return false;
 
         valid.erase(it);
         PopTillValid();
+        return true;
     }
 
     /**
