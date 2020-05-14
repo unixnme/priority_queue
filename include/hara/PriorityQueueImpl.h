@@ -35,7 +35,6 @@ public:
 protected:
     struct Pair {
         explicit Pair(std::pair<K, V> pair) : x{std::move(pair)} {}
-        explicit Pair(std::pair<const K, V> pair) : x{{pair.fist, pair.second}} {}
         std::pair<K, V> x;
         bool operator<(const Pair &that) const {
             return Compare{}(x.second, that.x.second) ||
@@ -167,7 +166,7 @@ public:
     template<typename Iterator>
     explicit PriorityQueueImpl2(Iterator begin, Iterator end) {
         for (auto it = begin; it != end; ++it) {
-            set.emplace(*it);
+            set.emplace(Pair{*it});
             valid.insert(*it);
         }
     }
@@ -236,9 +235,8 @@ public:
     const V &Peek(const K &key) const override { return valid.at(key); }
 
 private:
-    using Pair = typename PriorityQueueItf<K, K, C>::Pair;
-//    std::set<Pair, std::greater<Pair>> set;
-    std::set<Pair> set;
+    using Pair = typename PriorityQueueItf<K, V, C>::Pair;
+    std::set<Pair, std::greater<Pair>> set;
     std::map<K, V> valid;
 };
 
